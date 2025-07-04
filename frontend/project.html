@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>Projekt Details</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1 id="project-name"></h1>
+  <div id="task-list"></div>
+  <input type="text" id="new-task-title" placeholder="Neue Aufgabe...">
+  <input type="text" id="new-task-user" placeholder="Zuweisen an...">
+  <button onclick="createTask()">Aufgabe erstellen</button>
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const projectId = urlParams.get('id');
+
+    async function loadProject() {
+      const res = await fetch(`/api/projects`);
+      const projects = await res.json();
+      const project = projects.find(p => p.id == projectId);
+      if (project) document.getElementById("project-name").textContent = project.name;
+
+      const resTasks = await fetch(`/api/projects/${projectId}/tasks`);
+      const tasks = await resTasks.json();
+      const list = document.getElementById("task-list");
+      list.innerHTML = "";
+      tasks.forEach(t => {
+        const div = document.createElement("div");
+        div.innerHTML = `
+          <strong>${t.title}</strong> (zuständig: ${t.assignedTo || "-"})
+          <input type="checkbox" ${t.done ? "checked" : ""} onchange="toggleDone(${t.id}, this.checked)">
+        `;
+        list.appendChild(div);
+      });
+    }
+
+    async function createTask() {
+      const title = document.getElementById("new-task-title").value;
+      const user = document.getElementById("new-task-user").value;
+      if (!title) return;
+      await fetch(`/api/projects/${projectId}/tasks`, {
+        method: "POST",
+        headers: {"Content-Type":"application/json"},
+        body: JSON.stringify({title, assignedTo: user})
+      });
+      document.getElementById("new-task-title").value = "";
+      document.getElementById("new-task-user").value = "";
+      loadProject();
+    }
+
+    async function toggleDone(taskId, done) {
+      await fetch(`/api/tasks/${taskId}`, {
+        method: "PATCH",
+        headers: {"Content-Type":"application/json"},
+        body: JSON.stringify({done})
+      });
+      loadProject();
+    }
+
+    loadProject();
+  </script>
+</body>
+</html>

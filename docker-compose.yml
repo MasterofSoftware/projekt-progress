@@ -1,7 +1,12 @@
 version: "3"
 services:
-  projekt-progress:
+  project:
     build: .
-    ports:
-      - "4435:80"
+    container_name: project-progress
     restart: always
+    ports:
+      - "4435:3000"
+    volumes:
+      - project_data:/app/data
+volumes:
+  project_data:
