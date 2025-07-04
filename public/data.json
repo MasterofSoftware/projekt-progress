@@ -1,0 +1,8 @@
+{
+    "projects": [
+      { "name": "Projekt A", "progress": 80 },
+      { "name": "Projekt B", "progress": 45 },
+      { "name": "Projekt C", "progress": 10 }
+    ]
+  }
+  
