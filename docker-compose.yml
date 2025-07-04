@@ -2,11 +2,13 @@ version: "3"
 services:
   project:
     build: .
+    image: projectprocess:latest
     container_name: project-progress
-    restart: always
     ports:
       - "4435:3000"
     volumes:
-      - project_data:/app/data
+      - project_data:/app/backend/data
+    restart: always
+
 volumes:
   project_data:
