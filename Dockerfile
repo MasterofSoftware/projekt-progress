@@ -1,18 +1,23 @@
 FROM node:18-alpine
 
-# Arbeitsverzeichnis festlegen
+# Setze das Arbeitsverzeichnis direkt ins Backend
+WORKDIR /app/backend
+
+# Kopiere nur die package.json-Dateien zuerst (für besseres Layer-Caching)
+COPY backend/package*.json ./
+
+# Installiere Abhängigkeiten
+RUN npm install
+
+# Kopiere jetzt den vollständigen Backend-Code
+COPY backend ./
+
+# Kopiere auch das Frontend (ins Hauptverzeichnis z. B. für statische Dateien)
 WORKDIR /app
-
-# Abhängigkeiten vorbereiten
-COPY backend/package*.json ./backend/
-RUN cd backend && npm install
-
-# Restlichen Code kopieren
-COPY backend ./backend
 COPY frontend ./frontend
 
-# Port öffnen
+# Port öffnen (Express hört auf 3000)
 EXPOSE 3000
 
-# Startkommando
+# Starte die App
 CMD ["node", "backend/server.js"]
