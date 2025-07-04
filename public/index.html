@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Projekt Fortschritt</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1>Projekt-Fortschritt</h1>
+  <div id="projects"></div>
+
+  <script>
+    fetch('data.json')
+      .then(res => res.json())
+      .then(data => {
+        const container = document.getElementById('projects');
+        data.projects.forEach(p => {
+          const div = document.createElement('div');
+          div.className = 'project';
+          div.innerHTML = `
+            <h2>${p.name}</h2>
+            <div class="progress-bar">
+              <div class="progress" style="width: ${p.progress}%;"></div>
+            </div>
+            <p>${p.progress}% abgeschlossen</p>
+          `;
+          container.appendChild(div);
+        });
+      });
+  </script>
+</body>
+</html>
